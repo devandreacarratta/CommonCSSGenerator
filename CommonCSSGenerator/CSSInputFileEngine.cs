@@ -55,7 +55,7 @@ namespace CommonCSSGenerator
 
                     string rowNoSpace = _regex.RemoveSpaceWithRegEx(row);
 
-                    result.Add(fileName, rowNoSpace, row);
+                    result.Add(fileName, rowNoSpace, row, idxStyle);
 
                 }
 

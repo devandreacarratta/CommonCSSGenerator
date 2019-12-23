@@ -13,7 +13,7 @@ namespace CommonCSSGenerator
             this.Items = new SortedDictionary<string, CSSElements>();
         }
 
-        public void Add(string key, string value, string originalValue)
+        public void Add(string key, string value, string originalValue,int line)
         {
             if (this.Items.ContainsKey(key) == false)
             {
@@ -26,7 +26,7 @@ namespace CommonCSSGenerator
 
             if (items == 0)
             {
-                CSSElement element = new CSSElement(string.Empty, value, originalValue);
+                CSSElement element = new CSSElement(string.Empty, value, originalValue,line);
 
                 this.Items[key].Add(element);
             }
