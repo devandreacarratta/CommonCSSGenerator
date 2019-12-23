@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CommonCSSGenerator
@@ -8,80 +9,117 @@ namespace CommonCSSGenerator
     {
 
         private CSSFileDefinition _definition;
+        private string _outputFolderCSS;
+        private string _outputFolderJSON;
 
         public bool TrimStyle { get; set; }
 
-        public CSSOutputFileEngine(CSSFileDefinition definition)
+        public CSSOutputFileEngine(CSSFileDefinition definition, string outputFolderCSS, string outputFolderJSON)
         {
             _definition = definition;
-
+            this._outputFolderCSS = outputFolderCSS;
+            this._outputFolderJSON = outputFolderJSON;
 
             var keyCounter = _definition.KeysCounter(true);
         }
 
-        public SortedDictionary<string, List<string>> DoWork()
+        private SortedDictionary<string, List<string>> _rowsByFile = null;
+        private SortedDictionary<string, List<string>> RowsByFile
         {
-            string commonFileId = $"common-{Guid.NewGuid()}.css";
+            get
+            {
+                if (_rowsByFile == null)
+                {
+                    string commonFileId = $"common-{Guid.NewGuid()}.css";
 
-            SortedDictionary<string, List<string>> results = new SortedDictionary<string, List<string>>();
-            //results.Add(commonFileId, new List<string>());
+                    _rowsByFile = new SortedDictionary<string, List<string>>();
 
-            int fileNumber = _definition.Items.Count;
+                    int fileNumber = _definition.Items.Count;
 
 
-            List<string> commonToSkip = new List<string>();
+                    List<string> commonToSkip = new List<string>();
 
-            foreach (var item in _definition.Items)
+                    foreach (var item in _definition.Items)
+                    {
+
+                        foreach (var css in item.Value)
+                        {
+
+                            if (commonToSkip.Contains(css.Key))
+                            {
+                                continue;
+                            }
+
+                            int itemCounter = _definition.KeysCounter().Where(x => x.Key == css.Key).Select(x => x.Value).FirstOrDefault();
+
+                            bool rowAllFiles = (fileNumber == itemCounter);
+
+                            var style = item.Value.Where(x => x.Key == css.Key).Select(x => x.StyleOriginalValue).FirstOrDefault();
+
+                            if (this.TrimStyle)
+                            {
+                                style = style.Trim();
+                            }
+
+                            bool validStyleRow = CheckValidStyleRow(style);
+
+                            string prefile = (validStyleRow ? string.Empty : "ERR-");
+
+                            if (rowAllFiles)
+                            {
+                                string itemKeyCommon = $"{prefile}{commonFileId}";
+                                if (_rowsByFile.ContainsKey(itemKeyCommon) == false)
+                                {
+                                    _rowsByFile.Add(itemKeyCommon, new List<string>());
+                                }
+                                _rowsByFile[itemKeyCommon].Add(style);
+                                commonToSkip.Add(css.Key);
+                            }
+                            else
+                            {
+                                string itemKey = $"{prefile}{item.Key}";
+                                if (_rowsByFile.ContainsKey(itemKey) == false)
+                                {
+                                    _rowsByFile.Add(itemKey, new List<string>());
+                                }
+                                _rowsByFile[itemKey].Add(style);
+                            }
+
+                        }
+
+                    }
+                }
+                return _rowsByFile;
+            }
+        }
+
+        public bool DoWork()
+        {
+
+            try
             {
 
-                foreach (var css in item.Value)
+                foreach (var item in this.RowsByFile)
                 {
+                    string cssPath = Path.Combine(_outputFolderCSS, item.Key);
+                    string jsonPath = Path.Combine(_outputFolderJSON, item.Key).Replace("css", "json");
 
-                    if (commonToSkip.Contains(css.Key))
-                    {
-                        continue;
-                    }
+                    File.Delete(cssPath);
+                    File.Delete(jsonPath);
 
-                    int itemCounter = _definition.KeysCounter().Where(x => x.Key == css.Key).Select(x => x.Value).FirstOrDefault();
+                    File.WriteAllLines(cssPath, item.Value.ToArray());
 
-                    bool rowAllFiles = (fileNumber == itemCounter);
-
-                    var style = item.Value.Where(x => x.Key == css.Key).Select(x => x.StyleOriginalValue).FirstOrDefault();
-
-                    if (this.TrimStyle)
-                    {
-                        style = style.Trim();
-                    }
-
-                    bool validStyleRow = CheckValidStyleRow(style);
-
-                    string prefile = (validStyleRow ? string.Empty : "ERR-");
-
-                    if (rowAllFiles)
-                    {
-                        string itemKeyCommon = $"{prefile}{commonFileId}";
-                        if (results.ContainsKey(itemKeyCommon) == false)
-                        {
-                            results.Add(itemKeyCommon, new List<string>());
-                        }
-                        results[itemKeyCommon].Add(style);
-                        commonToSkip.Add(css.Key);
-                    }
-                    else
-                    {
-                        string itemKey = $"{prefile}{item.Key}";
-                        if (results.ContainsKey(itemKey) == false)
-                        {
-                            results.Add(itemKey, new List<string>());
-                        }
-                        results[itemKey].Add(style);
-                    }
-
+                    string jsonDefinition = Newtonsoft.Json.JsonConvert.SerializeObject(item, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText(jsonPath, jsonDefinition);
                 }
 
-            }
+                return true;
 
-            return results;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
 
         }
 

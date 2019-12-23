@@ -10,14 +10,12 @@ namespace CommonCSSGenerator
     {
 
         private string _source = string.Empty;
-        private string _output = string.Empty;
 
         private CSSRegEx _regex = null;
 
-        public CSSInputFileEngine(string sourceFolder, string outputFlder)
+        public CSSInputFileEngine(string sourceFolder)
         {
             _source = sourceFolder;
-            _output = outputFlder;
 
             _regex = new CSSRegEx();
         }
