@@ -32,12 +32,13 @@ namespace CommonCSSGenerator
             }
         }
 
-[JsonIgnore]
-        public SortedDictionary<string, int> KeysCounter
+        public SortedDictionary<string, int> _keysCounter = null;
+
+        public SortedDictionary<string, int> KeysCounter(bool reset = false)
         {
-            get
+            if(reset || _keysCounter==null)
             {
-                SortedDictionary<string, int> result = new SortedDictionary<string, int>();
+                _keysCounter = new SortedDictionary<string, int>();
 
                 foreach (var item in Items)
                 {
@@ -45,16 +46,15 @@ namespace CommonCSSGenerator
 
                     foreach (var k in keys)
                     {
-                        if (result.ContainsKey(k) == false)
+                        if (_keysCounter.ContainsKey(k) == false)
                         {
-                            result.Add(k, 0);
+                            _keysCounter.Add(k, 0);
                         }
-                        result[k] += 1;
+                        _keysCounter[k] += 1;
                     }
                 }
-
-                return result;
             }
+            return _keysCounter;
         }
 
     }

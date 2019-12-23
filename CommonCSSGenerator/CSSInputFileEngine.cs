@@ -47,13 +47,15 @@ namespace CommonCSSGenerator
                     continue;
                 }
 
+                string fileName = new FileInfo(item).Name;
+
                 for (int idxStyle = 0; idxStyle < styles.Length; idxStyle++)
                 {
                     string row = styles[idxStyle];
 
                     string rowNoSpace = _regex.RemoveSpaceWithRegEx(row);
 
-                    result.Add(item, rowNoSpace, row);
+                    result.Add(fileName, rowNoSpace, row);
 
                 }
 

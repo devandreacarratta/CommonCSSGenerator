@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace CommonCSSGenerator
 {
@@ -20,10 +21,19 @@ namespace CommonCSSGenerator
 
             string jsonDefinition = Newtonsoft.Json.JsonConvert.SerializeObject(definition,Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(Path.Combine(output, "schema.json"), jsonDefinition);
-            
 
+            CSSOutputFileEngine feo = new CSSOutputFileEngine(definition)
+            {
+                TrimStyle = true
+            };
 
-            var keys = definition.KeysCounter;
+            var keyValuePairs = feo.DoWork();
+
+            foreach (var item in keyValuePairs)
+            {
+                string path = Path.Combine(output, item.Key);
+                File.WriteAllLines(path, item.Value.ToArray());
+            }
 
             int aaa = 1;
         }
