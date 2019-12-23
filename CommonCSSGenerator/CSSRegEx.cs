@@ -1,15 +1,15 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace CommonCSSGenerator
 {
-    // RegEx from : https://www.codeproject.com/Articles/335850/CSSParser
-    class CSSRegEx
+    public class CSSRegEx
     {
 
-        private const string CSSGroups = @"(?<selector>(?:(?:[^,{]+),?)*?)\{(?:(?<name>[^}:]+):?(?<value>[^};]+);?)*?\}";
+        private readonly string CSSGroups = @"(?<selector>(?:(?:[^,{]+),?)*?)\{(?:(?<name>[^}:]+):?(?<value>[^};]+);?)*?\}";
 
-        private const string CSSComments = @"(?<!"")\/\*.+?\*\/(?!"")";
+        private const string REGEX_REMOVE_CSS_COMMENTS = @"/\*[\d\D]*?\*/";
+
+        private const string REGEX_REMOVE_CSS_SPACES = @"\s+";
 
 
         private static Regex _groups = null;
@@ -20,24 +20,21 @@ namespace CommonCSSGenerator
 
                 if (_groups == null)
                 {
-                    _groups = new Regex(CSSGroups, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                    _groups = new Regex(CSSGroups, RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
                 }
                 return _groups;
             }
         }
 
-        private static Regex _comments = null;
-        public Regex Comments
+        public string RemoveCommentsWithRegEx(string css)
         {
-            get
-            {
+            string result = Regex.Replace(css, REGEX_REMOVE_CSS_COMMENTS, string.Empty);
+            return result;
+        }
 
-                if (_comments == null)
-                {
-                    _comments = new Regex(CSSComments, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                }
-                return _comments;
-            }
+        public string RemoveSpaceWithRegEx(string css){
+            string result = Regex.Replace(css, REGEX_REMOVE_CSS_SPACES, string.Empty);
+            return result;
         }
 
     }
