@@ -7,7 +7,6 @@ namespace CommonCSSGenerator
 {
     public class CSSOutputFileEngine
     {
-
         private CSSFileDefinition _definition;
         private string _outputFolderCSS;
         private string _outputFolderJSON;
@@ -24,6 +23,7 @@ namespace CommonCSSGenerator
         }
 
         private SortedDictionary<string, List<string>> _rowsByFile = null;
+
         private SortedDictionary<string, List<string>> RowsByFile
         {
             get
@@ -36,15 +36,12 @@ namespace CommonCSSGenerator
 
                     int fileNumber = _definition.Items.Count;
 
-
                     List<string> commonToSkip = new List<string>();
 
                     foreach (var item in _definition.Items)
                     {
-
                         foreach (var css in item.Value)
                         {
-
                             if (commonToSkip.Contains(css.Key))
                             {
                                 continue;
@@ -84,9 +81,7 @@ namespace CommonCSSGenerator
                                 }
                                 _rowsByFile[itemKey].Add(style);
                             }
-
                         }
-
                     }
                 }
                 return _rowsByFile;
@@ -95,10 +90,8 @@ namespace CommonCSSGenerator
 
         public bool DoWork()
         {
-
             try
             {
-
                 foreach (var item in this.RowsByFile)
                 {
                     string cssPath = Path.Combine(_outputFolderCSS, item.Key);
@@ -109,13 +102,11 @@ namespace CommonCSSGenerator
                 }
 
                 return true;
-
             }
             catch (Exception ex)
             {
                 return false;
             }
-
         }
 
         private const char CHAR_OPEN = '{';
@@ -143,8 +134,6 @@ namespace CommonCSSGenerator
             bool result = (open > 0 && close > 0 && open == close);
 
             return result;
-
-
         }
     }
 }

@@ -4,8 +4,6 @@ namespace CommonCSSGenerator
 {
     public class FileHelper
     {
-
-
         public static void WriteCSS(string path, string[] lines)
         {
             File.Delete(path);
@@ -18,6 +16,5 @@ namespace CommonCSSGenerator
             File.Delete(path);
             File.WriteAllText(path, jsonDefinition);
         }
-
     }
 }

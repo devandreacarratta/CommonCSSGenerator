@@ -7,23 +7,21 @@ namespace CommonCSSGenerator
 {
     public class CSSInputFileEngine
     {
-
         private string _source = string.Empty;
         private string _outputFolderJson = string.Empty;
 
         private CSSRegEx _regex = null;
 
-        public CSSInputFileEngine(string sourceFolder,string outputFolderJson)
+        public CSSInputFileEngine(string sourceFolder, string outputFolderJson)
         {
             _source = sourceFolder;
             _outputFolderJson = outputFolderJson;
 
-                        _regex = new CSSRegEx();
+            _regex = new CSSRegEx();
         }
 
         public CSSFileDefinition DoWork()
         {
-
             CSSFileDefinition result = new CSSFileDefinition();
 
             var files = Directory.GetFiles(_source, "*.css");
@@ -33,16 +31,16 @@ namespace CommonCSSGenerator
                 string css = File.ReadAllText(item);
 
                 if (string.IsNullOrEmpty(css))
-{
+                {
                     continue;
                 }
 
-                css = css.Replace("\r\n",  string.Empty);
+                css = css.Replace("\r\n", string.Empty);
 
                 var styles = GetLines(css);
 
-                if (styles == null || styles.Length == 0) 
-{
+                if (styles == null || styles.Length == 0)
+                {
                     continue;
                 }
 
@@ -55,28 +53,22 @@ namespace CommonCSSGenerator
                     string rowNoSpace = _regex.RemoveSpaceWithRegEx(row);
 
                     result.Add(fileName, rowNoSpace, row, idxStyle);
-
                 }
-
             }
 
             string jsonPath = Path.Combine(_outputFolderJson, "CSSFileDefinition.json");
             FileHelper.WriteJSON<CSSFileDefinition>(jsonPath, result);
 
-
             return result;
-
         }
 
         private string[] GetLines(string css)
         {
-
-            string format = _regex.RemoveCommentsWithRegEx(css);            
+            string format = _regex.RemoveCommentsWithRegEx(css);
 
             MatchCollection list = _regex.Groups.Matches(
                 format
-            ) ;
-
+            );
 
             var resultList = new List<string>();
 
@@ -90,6 +82,5 @@ namespace CommonCSSGenerator
                 .OrderBy(x => x)
                 .ToArray();
         }
-
     }
 }

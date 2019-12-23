@@ -5,14 +5,12 @@ namespace CommonCSSGenerator
 {
     public class CSSElement
     {
-
-        public CSSElement(string name, string value,string originalValue,int line)
+        public CSSElement(string name, string value, string originalValue, int line)
         {
             this.StyleName = name;
             this.StyleValue = value;
             this.StyleOriginalValue = originalValue;
             this.Line = line;
-
 
             this.Key = GenerateItemKey(name, value);
         }
@@ -31,7 +29,6 @@ namespace CommonCSSGenerator
                 return sBuilder.ToString();
             }
         }
-
 
         public string Key { get; private set; }
 
