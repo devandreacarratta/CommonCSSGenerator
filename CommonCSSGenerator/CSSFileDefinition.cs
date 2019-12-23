@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace CommonCSSGenerator
@@ -13,7 +12,7 @@ namespace CommonCSSGenerator
             this.Items = new SortedDictionary<string, CSSElements>();
         }
 
-        public void Add(string key, string value, string originalValue,int line)
+        public void Add(string key, string value, string originalValue, int line)
         {
             if (this.Items.ContainsKey(key) == false)
             {
@@ -26,7 +25,7 @@ namespace CommonCSSGenerator
 
             if (items == 0)
             {
-                CSSElement element = new CSSElement(string.Empty, value, originalValue,line);
+                CSSElement element = new CSSElement(string.Empty, value, originalValue, line);
 
                 this.Items[key].Add(element);
             }
@@ -36,7 +35,7 @@ namespace CommonCSSGenerator
 
         public SortedDictionary<string, int> KeysCounter(bool reset = false)
         {
-            if(reset || _keysCounter==null)
+            if (reset || _keysCounter == null)
             {
                 _keysCounter = new SortedDictionary<string, int>();
 
@@ -56,7 +55,5 @@ namespace CommonCSSGenerator
             }
             return _keysCounter;
         }
-
     }
-
 }
