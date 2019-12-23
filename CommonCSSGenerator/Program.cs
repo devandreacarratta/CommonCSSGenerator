@@ -15,7 +15,7 @@ namespace CommonCSSGenerator
             string outputFolderJSON = ConfigurationManager.AppSettings["OutputFolderJSON"];
 
 
-            CSSInputFileEngine engine = new CSSInputFileEngine(sourceFolder);
+            CSSInputFileEngine engine = new CSSInputFileEngine(sourceFolder, outputFolderJSON);
             CSSFileDefinition definition = engine.DoWork();
 
             

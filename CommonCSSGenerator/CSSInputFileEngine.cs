@@ -10,14 +10,16 @@ namespace CommonCSSGenerator
     {
 
         private string _source = string.Empty;
+        private string _outputFolderJson = string.Empty;
 
         private CSSRegEx _regex = null;
 
-        public CSSInputFileEngine(string sourceFolder)
+        public CSSInputFileEngine(string sourceFolder,string outputFolderJson)
         {
             _source = sourceFolder;
+            _outputFolderJson = outputFolderJson;
 
-            _regex = new CSSRegEx();
+                        _regex = new CSSRegEx();
         }
 
         public CSSFileDefinition DoWork()
@@ -57,8 +59,11 @@ namespace CommonCSSGenerator
 
                 }
 
-
             }
+
+            string jsonPath = Path.Combine(_outputFolderJson, "CSSFileDefinition.json");
+            FileHelper.WriteJSON<CSSFileDefinition>(jsonPath, result);
+
 
             return result;
 

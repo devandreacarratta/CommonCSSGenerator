@@ -104,13 +104,8 @@ namespace CommonCSSGenerator
                     string cssPath = Path.Combine(_outputFolderCSS, item.Key);
                     string jsonPath = Path.Combine(_outputFolderJSON, item.Key).Replace("css", "json");
 
-                    File.Delete(cssPath);
-                    File.Delete(jsonPath);
-
-                    File.WriteAllLines(cssPath, item.Value.ToArray());
-
-                    string jsonDefinition = Newtonsoft.Json.JsonConvert.SerializeObject(item, Newtonsoft.Json.Formatting.Indented);
-                    File.WriteAllText(jsonPath, jsonDefinition);
+                    FileHelper.WriteCSS(cssPath, item.Value.ToArray());
+                    FileHelper.WriteJSON<KeyValuePair<string, List<string>>>(jsonPath, item);
                 }
 
                 return true;
