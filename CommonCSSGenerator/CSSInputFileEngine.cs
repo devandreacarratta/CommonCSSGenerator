@@ -64,22 +64,49 @@ namespace CommonCSSGenerator
 
         private string[] GetLines(string css)
         {
+            var resultList = new List<string>();
+
             string format = _regex.RemoveCommentsWithRegEx(css);
 
-            MatchCollection list = _regex.Groups.Matches(
+            // Keylist
+            MatchCollection KeyFramesList = _regex.Keyframes.Matches(
                 format
             );
 
-            var resultList = new List<string>();
-
-            for (int i = 0; i < list.Count; i++)
+            foreach (var item in KeyFramesList.Select(x=>x.Value))
             {
-                resultList.Add(list[i].Value);
+                resultList.Add(item);
+            }
+
+            format = _regex.RemoveKeyframesWithRegEx(format);
+
+            // Media
+            MatchCollection mediaList = _regex.Media.Matches(
+                format
+            );
+
+            foreach (var item in mediaList.Select(x => x.Value))
+            {
+                resultList.Add(item);
+            }
+
+            format = _regex.RemoveMediaWithRegEx(format);
+            // Media
+
+            MatchCollection groupsList = _regex.Groups.Matches(
+                format
+            );
+
+            if (groupsList != null && groupsList.Count > 0)
+            {
+                for (int i = 0; i < groupsList.Count; i++)
+                {
+                    resultList.Add(groupsList[i].Value);
+                }
             }
 
             return resultList
                 .Where(x => string.IsNullOrEmpty(x) == false)
-                .OrderBy(x => x)
                 .ToArray();
         }
     }

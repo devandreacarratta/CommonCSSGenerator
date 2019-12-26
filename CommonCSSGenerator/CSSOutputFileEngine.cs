@@ -15,7 +15,7 @@ namespace CommonCSSGenerator
 
         public CSSOutputFileEngine(CSSFileDefinition definition, string outputFolderCSS, string outputFolderJSON)
         {
-            _definition = definition;
+            this._definition = definition;
             this._outputFolderCSS = outputFolderCSS;
             this._outputFolderJSON = outputFolderJSON;
 
@@ -111,7 +111,6 @@ namespace CommonCSSGenerator
 
         private const char CHAR_OPEN = '{';
         private const char CHAR_CLOSE = '}';
-        private readonly char[] CHARS_TO_CHECK = new char[] { CHAR_OPEN, CHAR_CLOSE };
 
         private bool CheckValidStyleRow(string style)
         {
