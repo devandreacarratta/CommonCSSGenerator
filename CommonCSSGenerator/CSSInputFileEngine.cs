@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace CommonCSSGenerator
 {
@@ -50,7 +49,9 @@ namespace CommonCSSGenerator
                 {
                     string row = styles[idxStyle];
 
-                    string rowNoSpace = _regex.RemoveSpaceWithRegEx(row);
+                    string rowNoSpace = row.Clone() as string;
+
+                    _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_SPACES, ref rowNoSpace, null);
 
                     result.Add(fileName, rowNoSpace, row, idxStyle);
                 }
@@ -64,22 +65,15 @@ namespace CommonCSSGenerator
 
         private string[] GetLines(string css)
         {
-            string format = _regex.RemoveCommentsWithRegEx(css);
-
-            MatchCollection list = _regex.Groups.Matches(
-                format
-            );
-
             var resultList = new List<string>();
 
-            for (int i = 0; i < list.Count; i++)
-            {
-                resultList.Add(list[i].Value);
-            }
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_COMMENTS, ref css, null);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_KEYFRAMES, ref css, resultList);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_MEDIA, ref css, resultList);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_GROUP, ref css, resultList);
 
             return resultList
                 .Where(x => string.IsNullOrEmpty(x) == false)
-                .OrderBy(x => x)
                 .ToArray();
         }
     }

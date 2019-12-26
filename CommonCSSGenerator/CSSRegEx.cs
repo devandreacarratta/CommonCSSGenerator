@@ -1,39 +1,35 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CommonCSSGenerator
 {
     public class CSSRegEx
     {
-        private readonly string CSSGroups = @"(?<selector>(?:(?:[^,{]+),?)*?)\{(?:(?<name>[^}:]+):?(?<value>[^};]+);?)*?\}";
+        public readonly string REGEX_CSS_GROUP = @"(?<selector>(?:(?:[^,{]+),?)*?)\{(?:(?<name>[^}:]+):?(?<value>[^};]+);?)*?\}";
 
-        private const string REGEX_REMOVE_CSS_COMMENTS = @"/\*[\d\D]*?\*/";
+        public readonly string REGEX_CSS_KEYFRAMES = @"@(-moz-|-webkit-|-ms-)*keyframes\s(.*?){([0-9%a-zA-Z,\s.]*{(.*?)})*[\s\n]*}";
 
-        private const string REGEX_REMOVE_CSS_SPACES = @"\s+";
+        public readonly string REGEX_CSS_MEDIA = @"@media\s(.*?){[\s\S]*([\s\S]*[0-9%a-zA-Z,\s.]*{(.*?)})*[\s\n]*}";
 
-        private static Regex _groups = null;
+        public readonly string REGEX_CSS_COMMENTS = @"/\*[\d\D]*?\*/";
 
-        public Regex Groups
+        public readonly string REGEX_CSS_SPACES = @"\s+";
+
+        public void FindAndRemoveTextByRegex(string regexSyntax, ref string css, List<string> result)
         {
-            get
+            Regex regex = new Regex(regexSyntax, RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+            MatchCollection matches = regex.Matches(css);
+
+            if (result != null)
             {
-                if (_groups == null)
-                {
-                    _groups = new Regex(CSSGroups, RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                }
-                return _groups;
+                var resultList = matches.Select(x => x.Value);
+
+                result.AddRange(resultList);
             }
-        }
 
-        public string RemoveCommentsWithRegEx(string css)
-        {
-            string result = Regex.Replace(css, REGEX_REMOVE_CSS_COMMENTS, string.Empty);
-            return result;
-        }
-
-        public string RemoveSpaceWithRegEx(string css)
-        {
-            string result = Regex.Replace(css, REGEX_REMOVE_CSS_SPACES, string.Empty);
-            return result;
+            css = Regex.Replace(css, regexSyntax, string.Empty);
         }
     }
 }
