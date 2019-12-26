@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace CommonCSSGenerator
 {
@@ -50,7 +49,9 @@ namespace CommonCSSGenerator
                 {
                     string row = styles[idxStyle];
 
-                    string rowNoSpace = _regex.RemoveSpaceWithRegEx(row);
+                    string rowNoSpace = row.Clone() as string;
+
+                    _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_SPACES, ref rowNoSpace, null);
 
                     result.Add(fileName, rowNoSpace, row, idxStyle);
                 }
@@ -66,44 +67,10 @@ namespace CommonCSSGenerator
         {
             var resultList = new List<string>();
 
-            string format = _regex.RemoveCommentsWithRegEx(css);
-
-            // Keylist
-            MatchCollection KeyFramesList = _regex.Keyframes.Matches(
-                format
-            );
-
-            foreach (var item in KeyFramesList.Select(x=>x.Value))
-            {
-                resultList.Add(item);
-            }
-
-            format = _regex.RemoveKeyframesWithRegEx(format);
-
-            // Media
-            MatchCollection mediaList = _regex.Media.Matches(
-                format
-            );
-
-            foreach (var item in mediaList.Select(x => x.Value))
-            {
-                resultList.Add(item);
-            }
-
-            format = _regex.RemoveMediaWithRegEx(format);
-            // Media
-
-            MatchCollection groupsList = _regex.Groups.Matches(
-                format
-            );
-
-            if (groupsList != null && groupsList.Count > 0)
-            {
-                for (int i = 0; i < groupsList.Count; i++)
-                {
-                    resultList.Add(groupsList[i].Value);
-                }
-            }
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_COMMENTS, ref css, null);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_KEYFRAMES, ref css, resultList);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_MEDIA, ref css, resultList);
+            _regex.FindAndRemoveTextByRegex(_regex.REGEX_CSS_GROUP, ref css, resultList);
 
             return resultList
                 .Where(x => string.IsNullOrEmpty(x) == false)
